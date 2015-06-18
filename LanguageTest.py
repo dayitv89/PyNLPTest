@@ -1,30 +1,34 @@
 #! /usr/bin/python
-findAll = {}
-def init():
-    ALL = {
-    'I' : ['I', 'me', 'mine', 'main', 'mera', 'maine'],
-    'YOU' : ['you', 'your', 'tum', 'tumhara', 'aap', 'aapka', 'tu', 'tera' ],
-    'HE' : ['he', 'his', 'him', 'wo', 'vah', 'wah'],
-    'WHAT' : ['what', 'kya'],
-    'IS' : ['is', 'hai'],
-    'AM' : ['hai'],
-    'WAS' : ['was', 'tha']
-    }
-    for key, value in ALL.items():
-        for x in value:
-            x = x.upper()
-            if x in findAll:
-                findAll[x] = findAll[x] + [key]
-            else:
-                findAll[x] = [key]
-init()
 
-def parse(sentance):
-    print [meaningWord(a) for a in sentance.split()]
+from JLP import JLP
+jlp = JLP()
 
-def meaningWord(word):
-    if word.upper() in findAll:
-        return findAll[word.upper()]
-    return '#' + word
+CMDs = jlp.getCMDs()
 
-parse('kya hai tera naam')
+from JLP_add import start_add, start_rm
+from JLP_parse import parse
+from JLP_print import start_print
+
+def callingAMethod(method_name, args):
+    possibles = globals().copy()
+    possibles.update(locals())
+    method = possibles.get(method_name)
+    if not method:
+         raise Exception("Method %s not implemented" % method_name)
+    method(args)
+
+def cmdMode():
+    while True:
+        ip = raw_input("\nJamesLP$ ")
+        cmd = ip.split()
+        if len(cmd) == 0:
+            continue
+        if cmd[0] in CMDs:
+            callingAMethod('start_'+cmd[0], ip)
+        else:
+            print parse(ip)
+
+def start_exit(self):
+    exit()
+
+cmdMode()
